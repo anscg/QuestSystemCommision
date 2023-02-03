@@ -1,0 +1,12 @@
+{
+    "name": "QuestTest",
+    "globIgnorePaths": ["**/node_modules.project.json"],
+    "tree": {
+      "$className": "DataModel",
+      "ServerScriptService": {
+        "Quest": {
+          "$path": "scripts/Server"
+        }
+      }
+    }
+  }

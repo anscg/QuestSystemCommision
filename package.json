@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@quenty/blend": "^6.7.0",
+    "@quenty/loader": "^6.0.1"
+  }
+}
