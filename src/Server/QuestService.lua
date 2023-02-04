@@ -72,7 +72,7 @@ end
 function QuestService:DoQuest(player, questID)
     local questData = self._playerData[player].Value
 
-    if questData[questID] then
+    if questData[questID] and questData[questID].Done <= self._quests[questID].Requirement then
         questData[questID].Done = questData[questID].Done + 1
     else
         questData[questID].Done = 1
