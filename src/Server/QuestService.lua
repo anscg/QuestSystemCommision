@@ -81,4 +81,14 @@ function QuestService:DoQuest(player, questID)
     return questData
 end
 
+function QuestService:Claim(player, questID)
+    local questData = self._playerData[player].Value
+
+    if questData[questID] then
+        questData[questID] = "claimed"
+    end
+
+    return questData
+end
+
 return QuestService
