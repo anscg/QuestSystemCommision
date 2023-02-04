@@ -62,7 +62,23 @@ end
 
 function QuestService:SetQuest(questData)
     assert(typeof(questData) == "table", "QuestService/ questData is not a table")
-    self.quests = questData
+    self._quests = questData
+end
+
+function QuestService:GetQuest(player)
+    return self._playerData[player].Value
+end
+
+function QuestService:DoQuest(player, questID)
+    local questData = self._playerData[player].Value
+
+    if questData[questID] then
+        questData[questID] = questData[questID] + 1
+    else
+        questData[questID] = 1
+    end
+
+    return questData
 end
 
 return QuestService
