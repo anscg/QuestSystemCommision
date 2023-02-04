@@ -86,7 +86,7 @@ end
 function QuestService:Claim(player, questID)
     local questData = self._playerData[player].Value
 
-    if questData[questID].Done == self._quests[questID].Done then
+    if questData[questID].Done == self._quests[questID].Requirement then
         self._quests[questID].Reward(player)
         questData[questID].Claimed = true
     end

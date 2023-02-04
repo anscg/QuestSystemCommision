@@ -29,3 +29,4 @@ serviceBag:Start()
 
 --expose this to gobal
 _G.QuestService = Service
+_G.QuestObject = require(shared.QuestObject)
