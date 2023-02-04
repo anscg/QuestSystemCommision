@@ -73,10 +73,12 @@ function QuestService:DoQuest(player, questID)
     local questData = self._playerData[player].Value
 
     if questData[questID] then
-        questData[questID] = questData[questID] + 1
+        questData[questID].Done = questData[questID].Done + 1
     else
-        questData[questID] = 1
+        questData[questID].Done = 1
     end
+
+    self._playerData[player].Value = questData
 
     return questData
 end
@@ -84,8 +86,9 @@ end
 function QuestService:Claim(player, questID)
     local questData = self._playerData[player].Value
 
-    if questData[questID] then
-        questData[questID] = "claimed"
+    if questData[questID].Done == self._quests[questID].Done then
+        self._quests[questID].Reward(player)
+        questData[questID].Claimed = true
     end
 
     return questData
