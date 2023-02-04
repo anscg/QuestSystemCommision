@@ -17,16 +17,21 @@ local ValueObject = require("ValueObject")
 local QuestService = {}
 QuestService.ServiceName = "QuestService"
 
-function QuestService:Init()
-    self._serviceBag = assert(self._serviceBag, "QuestService/ ServiceBag is nil")
+function QuestService:Init(serviceBag)
+    self._serviceBag = assert(serviceBag, "QuestService/ ServiceBag is nil")
 
     print("QuestService/ Initializing...")
 
     self._playerDataStoreService = self._serviceBag:GetService(PlayerDataStoreService)
     self._maid = Maid.new()
 
-    Players.PlayerAdded:Connect(self:_handlePlayer)
+    self._playerData = {}
+
+    Players.PlayerAdded:Connect(function(player)
+        self:_handlePlayer(player)
+    end)
     Players.PlayerRemoving:Connect(function(player)
+        print("QuestService/ PlayerRemoving: ", player)
         self._maid[player] = nil
     end)
 
@@ -43,10 +48,11 @@ function QuestService:_handlePlayer(player)
 
     self._playerData[player] = ValueObject.new({})
 
-    maid:GivePromise(PlayerDataStoreService:PromiseDataStore(player)):Then(function(dataStore)
-        maid:GivePromise(dataStore:Load("quest",0))
+    maid:GivePromise(self._playerDataStoreService:PromiseDataStore(player)):Then(function(dataStore)
+        maid:GivePromise(dataStore:Load("quest",{}))
             :Then(function(questData)
                 self._playerData[player].Value = questData
+                maid:GiveTask(dataStore:StoreOnValueChange("quest", self._playerData[player]))
             end)
     end)
 
