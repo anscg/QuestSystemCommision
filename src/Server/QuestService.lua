@@ -18,7 +18,9 @@ local QuestService = {}
 QuestService.ServiceName = "QuestService"
 
 function QuestService:Init()
-    self._serviceBag = assert(self._serviceBag, "ServiceBag is nil")
+    self._serviceBag = assert(self._serviceBag, "QuestService/ ServiceBag is nil")
+
+    print("QuestService/ Initializing...")
 
     self._playerDataStoreService = self._serviceBag:GetService(PlayerDataStoreService)
     self._maid = Maid.new()
@@ -32,6 +34,8 @@ function QuestService:Init()
     for _, player in pairs(Players:GetPlayers()) do
         self:_handlePlayer(player)
     end
+    print('QuestService/ {self._serviceBag}')
+    print("QuestService/ Initialized!")
 end
 
 function QuestService:_handlePlayer(player)
