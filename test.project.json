@@ -4,8 +4,14 @@
     "tree": {
       "$className": "DataModel",
       "ServerScriptService": {
+        "$path": "test/Server",
         "Quest": {
           "$path": "scripts/Server"
+        }
+      },
+      "StarterPlayer": {
+        "StarterPlayerScripts": {
+          "$path": "test/Client"
         }
       }
     }

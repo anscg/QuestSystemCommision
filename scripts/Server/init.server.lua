@@ -22,7 +22,10 @@ clientScript.Name = "QuestClientScript"
 clientScript:Clone().Parent = ReplicatedFirst
 
 local serviceBag = require(server.ServiceBag).new()
-serviceBag:GetService(require(server.QuestService))
+local Service = serviceBag:GetService(require(server.QuestService))
 
 serviceBag:Init()
 serviceBag:Start()
+
+--expose this to gobal
+_G.QuestService = Service
