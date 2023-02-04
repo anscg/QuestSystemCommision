@@ -1,5 +1,5 @@
 > **Note**
-> Real-Time: Antcar is currently **Taking shower**
+> Real-Time: Antcar is currently **Sleeping**
 
 > **Warning**
 > The repo's licence doesen't grant you to use/sell the content, written approval by Antcar is needed.
