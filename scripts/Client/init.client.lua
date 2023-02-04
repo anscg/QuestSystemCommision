@@ -6,7 +6,7 @@ local ReplicatedFirst = game:GetService("ReplicatedFirst")
 
 local packages = ReplicatedFirst:WaitForChild("_SoftShutdownClientPackages")
 
-local QuestServiceClient = require(packages.QuestService)
+local QuestServiceClient = require(packages.QuestServiceClient)
 local serviceBag = require(packages.ServiceBag).new()
 
 serviceBag:GetService(QuestServiceClient)
