@@ -25,6 +25,7 @@ function QuestService:Init(serviceBag)
     self._playerDataStoreService = self._serviceBag:GetService(PlayerDataStoreService)
     self._maid = Maid.new()
 
+    self._quests = {}
     self._playerData = {}
 
     Players.PlayerAdded:Connect(function(player)
@@ -57,6 +58,11 @@ function QuestService:_handlePlayer(player)
     end)
 
     self._maid[player] = maid
+end
+
+function QuestService:SetQuest(questData)
+    assert(typeof(questData) == "table", "QuestService/ questData is not a table")
+    self.quests = questData
 end
 
 return QuestService
