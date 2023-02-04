@@ -15,7 +15,7 @@ function QuestServiceClient:Init(serviceBag)
 
     print("QuestServiceClient/ Initializing...")
 
-
+    
 
     print("QuestServiceClient/ Initialized!")
 end
