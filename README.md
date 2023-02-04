@@ -1,4 +1,4 @@
-> **Info**
+> **Note**
 > Real-Time: Antcar is currently **Taking shower**
 
 > **Warning**
