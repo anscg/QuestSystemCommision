@@ -10,6 +10,7 @@ local require = require(script.Parent.Loader).load(script)
 local BasicPane = require("BasicPane")
 local Blend = require("Blend")
 local BasicPaneUtils = require("BasicPaneUtils")
+local SpringObject = require("SpringObject")
 
 local BaseWindow = setmetatable({}, BasicPane)
 BaseWindow.__index = BaseWindow
@@ -21,6 +22,17 @@ function BaseWindow.new(obj)
     self._displayName = Blend.State("Window!")
     self._maid:GiveTask(self._displayName)
 
+    self._percentVisible = SpringObject.new(0.7, 30)
+    self._maid:GiveTask(self._percentVisible)
+    
+    self._maid:GiveTask(self.VisibleChanged:Connect(function(isVisible, doNotAnimate)
+        if doNotAnimate then
+            self._percentVisible.Value = isVisible and 1 or 0
+        else
+            self._percentVisible.Target = isVisible and 1 or 0
+        end
+    end))
+
     return self
 end
 
@@ -29,32 +41,26 @@ function BaseWindow:SetDisplayName(name)
     return self
 end
 
-function BaseWindow:_renderBase()
+function BaseWindow:_renderBase(props, infotip)
+    local percentVisible = self._percentVisible:ObserveRenderStepped()
+    local transparency = Blend.Computed(percentVisible, function(percentVisible)
+        return 1 - percentVisible
+    end)
+
     return Blend.New "Frame" {
     Position = UDim2.fromScale(0.5, 0.5);
     AnchorPoint = Vector2.new(0.5, 0.5);
     Size = UDim2.fromScale(0.6, 0.6);
     BackgroundTransparency = 1;
-    BorderColor3 = Color3.fromRGB(27, 42, 53);
-    BorderSizePixel = 1;
     [Blend.Children] = {
         Blend.New "UIAspectRatioConstraint" {
             AspectRatio = 1.310345;
             DominantAxis = Enum.DominantAxis.Height;
         };
         Blend.New "UIScale" {
-            Scale = 1;
-        };
-        Blend.New "ImageLabel" {
-            Position = UDim2.fromScale(-0.01385, -0.015124);
-            Size = UDim2.fromScale(1.039243, 1.099818);
-            BackgroundTransparency = 1;
-            BorderColor3 = Color3.fromRGB(27, 42, 53);
-            BorderSizePixel = 1;
-            Image = "http://www.roblox.com/asset/?id=12399488564";
-            ImageTransparency = 0.5;
-            Visible = false;
-            ZIndex = 3;
+            Scale = Blend.Computed(transparency, function(transparency)
+                return 0.7 + transparency * 0.3
+            end);
         };
         Blend.New "Frame" {
             Name = "Window";
@@ -62,8 +68,7 @@ function BaseWindow:_renderBase()
             AnchorPoint = Vector2.new(0.5, 0.5);
             Size = UDim2.fromScale(1, 1);
             BackgroundColor3 = Color3.fromRGB(33, 35, 39);
-            BorderColor3 = Color3.fromRGB(27, 42, 53);
-            BorderSizePixel = 1;
+            Transparency = transparency;
             [Blend.Children] = {
                 Blend.New "UICorner" {
                     CornerRadius = UDim.new(0.065, 0);
@@ -71,6 +76,7 @@ function BaseWindow:_renderBase()
                 Blend.New "UIStroke" {
                     Color = Color3.fromRGB(255, 255, 255);
                     Thickness = 6.7;
+                    Transparency = transparency;
                 };
                 Blend.New "TextLabel" {
                     Name = "Title";
@@ -78,10 +84,9 @@ function BaseWindow:_renderBase()
                     AnchorPoint = Vector2.new(0.5, 0.5);
                     Size = UDim2.fromScale(0.797634, 0.121174);
                     BackgroundTransparency = 1;
-                    BorderColor3 = Color3.fromRGB(27, 42, 53);
-                    BorderSizePixel = 1;
+                    TextTransparency = transparency;
                     FontFace = Font.new("rbxasset://fonts/families/FredokaOne.json");
-                    Text = "Quest!";
+                    Text = self._displayName;
                     TextColor3 = Color3.fromRGB(255, 255, 255);
                     TextScaled = true;
                     TextSize = 100;
@@ -93,10 +98,10 @@ function BaseWindow:_renderBase()
                     Position = UDim2.fromScale(0.497692, 0.598306);
                     AnchorPoint = Vector2.new(0.5, 0.5);
                     Size = UDim2.fromScale(0.798, 0.596975);
-                    BackgroundColor3 = Color3.fromRGB(255, 255, 255);
+                    GroupTransparency = transparency;
                     BackgroundTransparency = 1;
-                    BorderSizePixel = 0;
                     [Blend.Children] = {
+                        props[Blend.Children];
                         Blend.New "UICorner" {
                             CornerRadius = UDim.new(0.045, 0);
                         };
@@ -119,7 +124,9 @@ function BaseWindow:_renderBase()
             AnchorPoint = Vector2.new(0.5, 0.5);
             Size = UDim2.fromScale(1, 1);
             BackgroundColor3 = Color3.fromRGB(0, 0, 0);
-            BackgroundTransparency = 0.35;
+            BackgroundTransparency = Blend.Computed(percentVisible, function(percent)
+                return percent*0.35
+            end);--0.35
             BorderColor3 = Color3.fromRGB(27, 42, 53);
             BorderSizePixel = 1;
             ZIndex = 0;
@@ -129,7 +136,9 @@ function BaseWindow:_renderBase()
                 };
                 Blend.New "UIStroke" {
                     Thickness = 6.7;
-                    Transparency = 0.35;
+                    Transparency = Blend.Computed(percentVisible, function(percent)
+                        return percent*0.35
+                    end);--0.35
                 };
             };
         };
@@ -139,8 +148,7 @@ function BaseWindow:_renderBase()
             AnchorPoint = Vector2.new(1, 0.5);
             Size = UDim2.fromScale(0.48343, 0.132883);
             BackgroundTransparency = 1;
-            BorderColor3 = Color3.fromRGB(27, 42, 53);
-            BorderSizePixel = 1;
+            [Blend.Children] = infotip[Blend.Children];
         };
     };
 }
