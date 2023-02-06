@@ -5,7 +5,7 @@
     (c) Bloxcode 2023
 ]=]
 
-local require = require(script.Parent.Loader).load(script)
+local require = require(script.Parent.loader).load(script)
 
 local BasicPane = require("BasicPane")
 local Blend = require("Blend")
@@ -22,7 +22,7 @@ function QuestScreen.new(obj)--HMM
     --Doing this later
     self:SetDisplayName("Quests!")
 
-    self._maid:GiveTask(self._render:Subscribe(function(gui)
+    self._maid:GiveTask(self:_render():Subscribe(function(gui)
         self.Gui = gui
     end))
 
@@ -31,6 +31,8 @@ end
 
 function QuestScreen:_render()
     return self:_renderBase({
+
+        }, {
 
         })
 end

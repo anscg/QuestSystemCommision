@@ -10,6 +10,7 @@ return function(target)
 
     local questScreen = QuestScreen.new()
     questScreen.Gui.Parent = target
+    questScreen.Gui.Size = UDim2.fromScale(.7,.7)
     questScreen:SetDisplayName("Quests!")
     questScreen:Show()
     maid:GiveTask(questScreen)

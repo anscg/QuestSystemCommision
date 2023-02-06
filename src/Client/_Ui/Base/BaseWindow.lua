@@ -5,7 +5,7 @@
     (c) 2023 Bloxcode
 ]=]
 
-local require = require(script.Parent.Loader).load(script)
+local require = require(script.Parent.loader).load(script)
 
 local BasicPane = require("BasicPane")
 local Blend = require("Blend")
@@ -22,13 +22,18 @@ function BaseWindow.new(obj)
     self._displayName = Blend.State("Window!")
     self._maid:GiveTask(self._displayName)
 
-    self._percentVisible = SpringObject.new(0, 30, 0.7)
+    self._percentVisible = SpringObject.new(0,20, 0.6)
     self._maid:GiveTask(self._percentVisible)
 
     self._statefulIsVisible = Blend.State(self.IsVisible)
+    self._maid:GiveTask(self._statefulIsVisible)
+
+    self._numberIsVisible = Blend.State(0)
+    self._maid:GiveTask(self._numberIsVisible)
     
     self._maid:GiveTask(self.VisibleChanged:Connect(function(isVisible, doNotAnimate)
         self._statefulIsVisible.Value = isVisible
+        self._numberIsVisible.Value = isVisible and 1 or 0
         if doNotAnimate then
             self._percentVisible.Value = isVisible and 1 or 0
         else
@@ -40,7 +45,7 @@ function BaseWindow.new(obj)
 end
 
 function BaseWindow:SetDisplayName(name)
-    self._displayName:Set(name)
+    self._displayName.Value = name
     return self
 end
 
@@ -50,10 +55,14 @@ function BaseWindow:_renderBase(props, infotip)
         return 1 - percentVisible
     end)
 
+    Blend.Computed(self._statefulIsVisible, function(isVisible)
+        print("IsVisible", isVisible)
+    end)
+
     return Blend.New "Frame" {
     Position = UDim2.fromScale(0.5, 0.5);
     AnchorPoint = Vector2.new(0.5, 0.5);
-    Size = UDim2.fromScale(0.6, 0.6);
+    Size = UDim2.fromScale(1,1);
     BackgroundTransparency = 1;
     [Blend.Children] = {
         Blend.New "UIAspectRatioConstraint" {
@@ -61,8 +70,8 @@ function BaseWindow:_renderBase(props, infotip)
             DominantAxis = Enum.DominantAxis.Height;
         };
         Blend.New "UIScale" {
-            Scale = Blend.Computed(transparency, function(transparency)
-                return 0.7 + transparency * 0.3
+            Scale = Blend.Computed(percentVisible, function(transparency)
+                return 0.8 + transparency * 0.2
             end);
         };
         Blend.New "Frame" {
@@ -79,7 +88,10 @@ function BaseWindow:_renderBase(props, infotip)
                 Blend.New "UIStroke" {
                     Color = Color3.fromRGB(255, 255, 255);
                     Thickness = 6.7;
-                    Transparency = transparency;
+                    Transparency = Blend.Computed(transparency, function(transparency)
+                        --transparency Can't be bigger than 1
+                        return transparency > 1 and 1 or transparency
+                    end);
                 };
                 Blend.New "TextLabel" {
                     Name = "Title";
@@ -123,15 +135,15 @@ function BaseWindow:_renderBase(props, infotip)
         };
         Blend.New "Frame" {
             Name = "DropShadow";
-            Position = Blend.Computed(Blend.Spring(self.statefulIsVisible, 20, 0.4), function(value)
+            Position = Blend.Computed(Blend.Spring(self._numberIsVisible, 10, 0.2), function(value)
                 return UDim2.fromScale(0.5,0.5):Lerp(UDim2.new(0.5, 5, 0.5, 7), value)
             end);
             AnchorPoint = Vector2.new(0.5, 0.5);
             Size = UDim2.fromScale(1, 1);
             BackgroundColor3 = Color3.fromRGB(0, 0, 0);
-            BackgroundTransparency = Blend.Computed(percentVisible, function(percent)
-                return percent*0.35
-            end);--0.35
+            BackgroundTransparency = Blend.Computed(transparency, function(percent)
+                return 1-(1-percent)*0.65
+            end);--0.3
             BorderColor3 = Color3.fromRGB(27, 42, 53);
             BorderSizePixel = 1;
             ZIndex = 0;
@@ -141,8 +153,9 @@ function BaseWindow:_renderBase(props, infotip)
                 };
                 Blend.New "UIStroke" {
                     Thickness = 6.7;
-                    Transparency = Blend.Computed(percentVisible, function(percent)
-                        return percent*0.35
+                    Transparency = Blend.Computed(transparency, function(percent)
+                        local value = 1-(1-percent)*0.65
+                        return value > 1 and 1 or value
                     end);--0.35
                 };
             };
