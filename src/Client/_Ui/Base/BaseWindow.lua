@@ -22,10 +22,13 @@ function BaseWindow.new(obj)
     self._displayName = Blend.State("Window!")
     self._maid:GiveTask(self._displayName)
 
-    self._percentVisible = SpringObject.new(0.7, 30)
+    self._percentVisible = SpringObject.new(0, 30, 0.7)
     self._maid:GiveTask(self._percentVisible)
+
+    self._statefulIsVisible = Blend.State(self.IsVisible)
     
     self._maid:GiveTask(self.VisibleChanged:Connect(function(isVisible, doNotAnimate)
+        self._statefulIsVisible.Value = isVisible
         if doNotAnimate then
             self._percentVisible.Value = isVisible and 1 or 0
         else
@@ -120,7 +123,9 @@ function BaseWindow:_renderBase(props, infotip)
         };
         Blend.New "Frame" {
             Name = "DropShadow";
-            Position = UDim2.new(0.5, 7, 0.5, 7);
+            Position = Blend.Computed(Blend.Spring(self.statefulIsVisible, 20, 0.4), function(value)
+                return UDim2.fromScale(0.5,0.5):Lerp(UDim2.new(0.5, 5, 0.5, 7), value)
+            end);
             AnchorPoint = Vector2.new(0.5, 0.5);
             Size = UDim2.fromScale(1, 1);
             BackgroundColor3 = Color3.fromRGB(0, 0, 0);
