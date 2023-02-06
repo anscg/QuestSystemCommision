@@ -1,0 +1,3 @@
+[submodule "lib/evenmore"]
+	path = lib/evenmore
+	url = https://github.com/ottohatt/evenmore

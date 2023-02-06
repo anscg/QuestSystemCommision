@@ -16,4 +16,8 @@ return function(target)
 
     local bar = StoryBarUtils.createStoryBar(maid, target)
     StoryBarPaneUtils.makeVisibleSwitch(bar, questScreen)
+
+    return function()
+        maid:DoCleaning()
+    end
 end

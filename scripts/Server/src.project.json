@@ -5,8 +5,8 @@
       "node_modules": {
         "$path": "../../node_modules"
       },
-      "@evenmore":{
-        "$path": "../../lib/evenmore"
+      "@external":{
+        "$path": "../../lib"
       
       }
     }
