@@ -6,7 +6,7 @@
         "$path": "../../node_modules"
       },
       "@evenmore":{
-        "$path": "../../lib/@evenmore"
+        "$path": "../../lib/evenmore"
       
       }
     }
