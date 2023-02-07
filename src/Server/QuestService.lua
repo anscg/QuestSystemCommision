@@ -75,10 +75,16 @@ end
 function QuestService:DoQuest(player, questID)
     local questData = self._playerData[player.UserId].Value
 
-    if questData[questID] and questData[questID].Done <= self._quests[questID].Requirement then
-        questData[questID].Done = questData[questID].Done + 1
-    else
+    if questData[questID] == nil then
+        print("QuestService/ Quest not found on player, creating new quest")
+        questData[questID] = {}
         questData[questID].Done = 1
+        questData[questID].Expire = os.time() + 86400
+    elseif questData[questID].Expire < os.time() then
+        questData[questID].Done = 1
+        questData[questID].Expire = os.time() + 86400
+    else
+        questData[questID].Done = questData[questID].Done + 1
     end
 
     self._playerData[player.UserId].Value = questData
