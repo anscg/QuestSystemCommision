@@ -46,18 +46,21 @@ end
 
 function QuestService:_handlePlayer(player)
     local maid = Maid.new()
-
-    self._playerData[player] = ValueObject.new({})
+    self._playerData[player.UserId] = ValueObject.new({})
 
     maid:GivePromise(self._playerDataStoreService:PromiseDataStore(player)):Then(function(dataStore)
         maid:GivePromise(dataStore:Load("quest",{}))
             :Then(function(questData)
-                self._playerData[player].Value = questData
-                maid:GiveTask(dataStore:StoreOnValueChange("quest", self._playerData[player]))
+                self._playerData[player.UserId].Value = questData
+                maid:GiveTask(dataStore:StoreOnValueChange("quest", self._playerData[player.UserId]))
             end)
     end)
 
     self._maid[player] = maid
+end
+
+function QuestService:GetQuestList()
+    return self._quests
 end
 
 function QuestService:SetQuest(questData)
@@ -66,11 +69,11 @@ function QuestService:SetQuest(questData)
 end
 
 function QuestService:GetQuest(player)
-    return self._playerData[player].Value
+    return self._playerData[player.UserId].Value
 end
 
 function QuestService:DoQuest(player, questID)
-    local questData = self._playerData[player].Value
+    local questData = self._playerData[player.UserId].Value
 
     if questData[questID] and questData[questID].Done <= self._quests[questID].Requirement then
         questData[questID].Done = questData[questID].Done + 1
@@ -78,13 +81,13 @@ function QuestService:DoQuest(player, questID)
         questData[questID].Done = 1
     end
 
-    self._playerData[player].Value = questData
+    self._playerData[player.UserId].Value = questData
 
     return questData
 end
 
 function QuestService:Claim(player, questID)
-    local questData = self._playerData[player].Value
+    local questData = self._playerData[player.UserId].Value
 
     if questData[questID].Done == self._quests[questID].Requirement then
         self._quests[questID].Reward(player)

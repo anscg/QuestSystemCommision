@@ -1,3 +1,7 @@
+--wait until _G.QuestObject is not nil
+while _G.QuestObject == nil do
+    task.wait()
+end
 local QuestObject = _G.QuestObject
 local function GrantCoin(amount)
     return function(player)

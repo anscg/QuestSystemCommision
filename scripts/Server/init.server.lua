@@ -23,10 +23,7 @@ clientScript:Clone().Parent = ReplicatedFirst
 
 local serviceBag = require(server.ServiceBag).new()
 local Service = serviceBag:GetService(require(server.QuestService))
+serviceBag:GetService(server.GameService)
 
 serviceBag:Init()
 serviceBag:Start()
-
---expose this to gobal
-_G.QuestService = Service
-_G.QuestObject = require(shared.QuestObject)
